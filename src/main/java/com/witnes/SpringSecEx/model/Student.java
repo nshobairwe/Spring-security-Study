@@ -1,8 +1,11 @@
-package com.witnes.SpringSecEx;
+package com.witnes.SpringSecEx.model;
+
 
 
 
 public class Student {
+
+
     private int id;
     private String name;
     private String marks;
