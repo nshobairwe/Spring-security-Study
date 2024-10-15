@@ -27,7 +27,7 @@ public class SecurityConfig {
         return  http
                 .csrf(csrf -> csrf.disable()) // Consider enabling in production
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/register").permitAll() // Allow access to registration
+                        //.requestMatchers("/register").permitAll() // Allow access to registration
                         .anyRequest().authenticated()) // Secure all other endpoints
                 .httpBasic(Customizer.withDefaults()) // Enable basic authentication for Postman
                 .formLogin(Customizer.withDefaults()) // Enable form login
