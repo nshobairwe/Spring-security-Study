@@ -16,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -25,52 +24,39 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-
-      return  http
-              //disable csrf
-                .csrf(customizer -> customizer.disable())
-              //allow authentication login page
-                .authorizeHttpRequests(request ->request.anyRequest().authenticated())
-              //enable in postman
-                .httpBasic(Customizer.withDefaults())
-              .formLogin(Customizer.withDefaults()).build();
-              //enable form login
-
-                //make http to be stateless request
-                //.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).build();
-
-
+        return  http
+                .csrf(csrf -> csrf.disable()) // Consider enabling in production
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/register").permitAll() // Allow access to registration
+                        .anyRequest().authenticated()) // Secure all other endpoints
+                .httpBasic(Customizer.withDefaults()) // Enable basic authentication for Postman
+                .formLogin(Customizer.withDefaults()) // Enable form login
+                .build();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+        provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance()); // Replace with BCrypt in production
         provider.setUserDetailsService(userDetailsService);
         return provider;
     }
-//
-//    //customized user
-//    @Bean
-//    public UserDetailsService userDetailService(){
-//
-//        UserDetails user1 = User
-//                .withDefaultPasswordEncoder()
-//                .username("wit")
-//                .password("123")
-//                .roles("USER")
-//                .build();
-//        UserDetails user2 = User
-//                .withDefaultPasswordEncoder()
-//                .username("witnes")
-//                .password("123")
-//                .roles("USER")
-//                .build();
-//
-//
-//
-//        return new InMemoryUserDetailsManager();
-//    }
 
+    // Uncomment to define custom in-memory users
+    // @Bean
+    // public UserDetailsService userDetailService() {
+    //     UserDetails user1 = User
+    //             .withDefaultPasswordEncoder()
+    //             .username("wit")
+    //             .password("123")
+    //             .roles("USER")
+    //             .build();
+    //     UserDetails user2 = User
+    //             .withDefaultPasswordEncoder()
+    //             .username("witnes")
+    //             .password("123")
+    //             .roles("USER")
+    //             .build();
+    //     return new InMemoryUserDetailsManager(user1, user2);
+    // }
 }
